@@ -3,7 +3,6 @@ on:
   push:
     branches:
       - '*'
-      - '!main'
 jobs:
   build:
     name: Hello world action
@@ -21,13 +20,19 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - 
+        name: Extract branch name
+        shell: bash
+        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+        id: extract_branch
+
       -
         name: Build and push
         id: docker_build
         uses: docker/build-push-action@v2
         with:
           push: ${{ github.ref == 'refs/heads/main' }}
-          tags: safesoftware/hal:$(date +%s)
+          tags: safesoftware/hal:${{ steps.extract_branch.outputs.branch }}
       -
         name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
