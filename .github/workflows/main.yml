@@ -36,3 +36,6 @@ jobs:
       -
         name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
+      -
+        name: github ref
+        run: echo ${{ github.ref }}
